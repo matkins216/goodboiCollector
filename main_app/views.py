@@ -1,23 +1,14 @@
 from django.shortcuts import render
+from .models import Goodboiz
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
 
 # Create your views here.
 
+class GoodboiCreate(CreateView):
+    model = Goodboiz
 
-class goodbz:  # Note that parens are optional if not inheriting from another class
-  def __init__(self, name, breed, description, age):
-    self.name = name
-    self.breed = breed
-    self.description = description
-    self.age = age
-
-
-goodboiz = [
-    goodbz('Bear', 'poodle', "can't hold his licker", 13),
-    goodbz('Rajah', 'besenji', 'the distinguished gentleman', 5),
-    goodbz('Pippin', 'undetermined', 'cutest damn dog', 3),
-]
-
-
+    fields = '__all__'
+    
 
 def home(request):
     return render(request, 'home.html')
@@ -26,4 +17,9 @@ def about(request):
     return render(request, 'about.html')
 
 def gb_index(request):
-    return render(request, 'goodboiz/index.html', { 'gb': goodboiz })
+    gb = Goodboiz.objects.all()
+    return render(request, 'goodboiz/index.html', { 'gb': gb })
+
+def gb_detail(request, gb_id):
+    gb = Goodboiz.objects.get(id=gb_id)
+    return render(request, 'goodboiz/detail.html', {'gbz': gb})
