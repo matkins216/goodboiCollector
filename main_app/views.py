@@ -23,3 +23,12 @@ def gb_index(request):
 def gb_detail(request, gb_id):
     gb = Goodboiz.objects.get(id=gb_id)
     return render(request, 'goodboiz/detail.html', {'gbz': gb})
+
+class GoodboiUpdate(UpdateView):
+    model = Goodboiz
+
+    fields = ['breed', 'description', 'age']
+
+class GoodboiDelete(DeleteView):
+    model = Goodboiz
+    success_url = '/goodboiz/'
