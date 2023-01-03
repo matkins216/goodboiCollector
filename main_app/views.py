@@ -1,7 +1,9 @@
 from django.shortcuts import render, redirect
-from .models import Goodboiz
+from .models import Goodboiz, Toy
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.views.generic import ListView, DetailView
 from .forms import FeedingForm
+from django.http import HttpResponse
 
 # Create your views here.
 
@@ -31,7 +33,7 @@ def add_feeding(request, goodboiz_id):
 class GoodboiCreate(CreateView):
     model = Goodboiz
 
-    fields = '__all__'
+    fields = ['name', 'breed', 'description', 'age']
     
 
 def home(request):
@@ -46,8 +48,10 @@ def gb_index(request):
 
 def gb_detail(request, gb_id):
     gb = Goodboiz.objects.get(id=gb_id)
+    toys_gb_doesnt_have = Toy.objects.exclude(
+        id__in=gb.toys.all().values_list('id'))
     feeding_form = FeedingForm()
-    return render(request, 'goodboiz/detail.html', {'gbz': gb, 'feeding_form': feeding_form})
+    return render(request, 'goodboiz/detail.html', {'gbz': gb, 'feeding_form': feeding_form, 'toys': toys_gb_doesnt_have})
 
 class GoodboiUpdate(UpdateView):
     model = Goodboiz
@@ -57,3 +61,34 @@ class GoodboiUpdate(UpdateView):
 class GoodboiDelete(DeleteView):
     model = Goodboiz
     success_url = '/goodboiz/'
+
+
+class ToyList(ListView):
+    model = Toy
+
+
+class ToyDetail(DetailView):
+    model = Toy
+
+
+class ToyCreate(CreateView):
+    model = Toy
+    fields = '__all__'
+
+
+class ToyUpdate(UpdateView):
+    model = Toy
+    fields = ['name', 'color']
+
+
+class ToyDelete(DeleteView):
+    model = Toy
+    success_url = '/toys/'
+
+
+def assoc_toy(request, gb_id, toy_id):
+  # Note that you can pass a toy's id instead of the whole object
+  Goodboiz.objects.get(id=gb_id).toys.add(toy_id)
+  return redirect('detail', gb_id=gb_id)
+
+
